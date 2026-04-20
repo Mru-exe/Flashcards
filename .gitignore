@@ -9,6 +9,10 @@ CLAUDE.md
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/.idea/*Preferences*.xml
+/.idea/*preferences*.xml
+/.idea/deploymentTargetSelector.xml
+/.idea/markdown.xml
 .DS_Store
 /build
 /captures
