@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "topics")
-data class Topic(
+data class TopicEntity(
     @PrimaryKey val id: Int,   // matches OpenTDB category ID
     val name: String
 )

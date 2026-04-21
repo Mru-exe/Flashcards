@@ -8,14 +8,14 @@ import androidx.room.PrimaryKey
 @Entity(
     tableName = "decks",
     foreignKeys = [ForeignKey(
-        entity = Topic::class,
+        entity = TopicEntity::class,
         parentColumns = ["id"],
         childColumns = ["topicId"],
         onDelete = ForeignKey.SET_NULL
     )],
     indices = [Index("topicId")]
 )
-data class Deck(
+data class DeckEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val topicId: Int? = null,

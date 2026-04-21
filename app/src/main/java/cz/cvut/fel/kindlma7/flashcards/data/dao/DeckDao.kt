@@ -6,30 +6,30 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import cz.cvut.fel.kindlma7.flashcards.data.entity.Deck
+import cz.cvut.fel.kindlma7.flashcards.data.entity.DeckEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DeckDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(deck: Deck): Long
+    suspend fun insert(deckEntity: DeckEntity): Long
 
     @Update
-    suspend fun update(deck: Deck)
+    suspend fun update(deckEntity: DeckEntity)
 
     @Delete
-    suspend fun delete(deck: Deck)
+    suspend fun delete(deckEntity: DeckEntity)
 
     @Delete
-    suspend fun deleteAll(decks: List<Deck>)
+    suspend fun deleteAll(deckEntities: List<DeckEntity>)
 
     @Query("SELECT * FROM decks ORDER BY createdAt DESC")
-    fun getAll(): Flow<List<Deck>>
+    fun getAll(): Flow<List<DeckEntity>>
 
     @Query("SELECT * FROM decks WHERE id = :id")
-    suspend fun getById(id: Long): Deck?
+    suspend fun getById(id: Long): DeckEntity?
 
     @Query("SELECT * FROM decks WHERE topicId = :topicId ORDER BY createdAt DESC")
-    fun getByTopic(topicId: Int): Flow<List<Deck>>
+    fun getByTopic(topicId: Int): Flow<List<DeckEntity>>
 }
