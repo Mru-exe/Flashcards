@@ -34,11 +34,15 @@ interface FlashcardDao {
     @Query("SELECT * FROM flashcards WHERE id = :id")
     suspend fun getById(id: Long): FlashcardEntity?
 
-    // Cards whose next review time has passed — used by the SM-2 study session
     @Query("SELECT * FROM flashcards WHERE deckId = :deckId AND nextReviewAt <= :now ORDER BY nextReviewAt ASC")
     fun getDueCards(deckId: Long, now: Long): Flow<List<FlashcardEntity>>
 
-    // Full-text search within a deck (A3: filtering/search)
-    @Query("SELECT * FROM flashcards WHERE deckId = :deckId AND (question LIKE '%' || :query || '%' OR answer LIKE '%' || :query || '%')")
-    fun search(deckId: Long, query: String): Flow<List<FlashcardEntity>>
+     @Query("SELECT * FROM flashcards WHERE deckId = :deckId AND (question LIKE '%' || :query || '%' OR answer LIKE '%' || :query || '%')")
+     fun search(deckId: Long, query: String): Flow<List<FlashcardEntity>>
+
+     @Query("SELECT COUNT(*) FROM flashcards WHERE deckId = :deckId")
+     suspend fun getCardCount(deckId: Long): Int
+
+     @Query("SELECT COUNT(*) FROM flashcards WHERE deckId = :deckId AND nextReviewAt <= :now")
+     suspend fun getDueCount(deckId: Long, now: Long): Int
 }
