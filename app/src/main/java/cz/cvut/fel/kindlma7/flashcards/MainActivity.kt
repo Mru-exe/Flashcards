@@ -31,6 +31,8 @@ import androidx.lifecycle.ViewModelProvider
 import cz.cvut.fel.kindlma7.flashcards.navigation.Route
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
 
 private val bottomNavItems = listOf(
@@ -40,6 +42,10 @@ private val bottomNavItems = listOf(
 )
 
 class MainActivity : ComponentActivity() {
+    private val deckListViewModel: DeckListViewModel by viewModels {
+        DeckListViewModel.factory((application as FlashcardsApplication).container.deckRepository)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -83,7 +89,15 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(Route.DeckList.path) {
-                            //TODO: Implement deck list screen
+                            DeckListScreen(
+                                viewModel = deckListViewModel,
+                                onNavigateToFlashcards = { deckId ->
+                                    navController.navigate(Route.FlashcardList.createRoute(deckId))
+                                },
+                                onNavigateToStudySession = { deckId ->
+                                    navController.navigate(Route.StudySession.createRoute(deckId))
+                                },
+                            )
                         }
 
                         composable(Route.Import.path) {
