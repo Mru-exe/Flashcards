@@ -26,7 +26,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.activity.viewModels
+import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModelProvider
 import cz.cvut.fel.kindlma7.flashcards.navigation.Route
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
@@ -45,6 +49,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val appContainer = (application as FlashcardsApplication).container
         setContent {
             FlashcardsTheme {
                 val navController = rememberNavController()
@@ -106,7 +111,23 @@ class MainActivity : ComponentActivity() {
                             ),
                         ) { backStack ->
                             val deckId = backStack.arguments!!.getLong(Route.FlashcardList.ARG_DECK_ID)
-                            //TODO: Implement flashcard list screen
+                            val viewModel = remember(deckId) {
+                                ViewModelProvider(
+                                    backStack,
+                                    FlashcardListViewModel.factory(
+                                        appContainer.flashcardRepository,
+                                        appContainer.deckRepository,
+                                        deckId,
+                                    )
+                                )[FlashcardListViewModel::class.java]
+                            }
+                            FlashcardListScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = { navController.popBackStack() },
+                                onNavigateToStudySession = {
+                                    navController.navigate(Route.StudySession.createRoute(deckId))
+                                },
+                            )
                         }
 
                         composable(
