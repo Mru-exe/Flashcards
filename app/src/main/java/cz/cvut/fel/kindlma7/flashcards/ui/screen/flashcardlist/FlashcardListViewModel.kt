@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import cz.cvut.fel.kindlma7.flashcards.data.repository.DeckRepository
 import cz.cvut.fel.kindlma7.flashcards.data.repository.FlashcardRepository
 import cz.cvut.fel.kindlma7.flashcards.domain.Flashcard
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 sealed interface FlashcardListEffect {
@@ -21,6 +23,7 @@ sealed interface FlashcardListEffect {
     data class ShowError(val message: String) : FlashcardListEffect
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class FlashcardListViewModel(
     private val deckId: Long,
     private val flashcardRepository: FlashcardRepository,
@@ -33,6 +36,8 @@ class FlashcardListViewModel(
     private val _effects = MutableSharedFlow<FlashcardListEffect>()
     val effects: SharedFlow<FlashcardListEffect> = _effects.asSharedFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+
     init {
         viewModelScope.launch {
             val deck = deckRepository.getById(deckId)
@@ -40,11 +45,16 @@ class FlashcardListViewModel(
                 _uiState.value = FlashcardListUiState.Error("Deck not found")
                 return@launch
             }
-            flashcardRepository.getByDeck(deckId)
+            _searchQuery
+                .flatMapLatest { query ->
+                    if (query.isBlank()) flashcardRepository.getByDeck(deckId)
+                    else flashcardRepository.search(deckId, query)
+                }
                 .catch { e -> _uiState.value = FlashcardListUiState.Error(e.message ?: "Unknown error") }
                 .collect { flashcards ->
+                    val query = _searchQuery.value
                     val dialog = (_uiState.value as? FlashcardListUiState.Content)?.dialog
-                    _uiState.value = FlashcardListUiState.Content(deck, flashcards, dialog)
+                    _uiState.value = FlashcardListUiState.Content(deck, flashcards, query, dialog)
                 }
         }
     }
@@ -60,6 +70,7 @@ class FlashcardListViewModel(
             is FlashcardListEvent.ConfirmDeleteFlashcard -> deleteFlashcard(event.flashcard)
             is FlashcardListEvent.NavigateBack -> emit(FlashcardListEffect.NavigateBack)
             is FlashcardListEvent.StartStudySession -> emit(FlashcardListEffect.NavigateToStudySession)
+            is FlashcardListEvent.UpdateSearchQuery -> _searchQuery.value = event.query
         }
     }
 

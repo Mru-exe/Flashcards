@@ -13,10 +13,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -137,26 +139,49 @@ private fun FlashcardListContent(
 ) {
     var expandedCardId by remember { mutableStateOf<Long?>(null) }
 
-    if (state.flashcards.isEmpty()) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("No flashcards yet", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    "Tap + to add your first card",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+    Column(modifier = modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = state.searchQuery,
+            onValueChange = { onEvent(FlashcardListEvent.UpdateSearchQuery(it)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            placeholder = { Text("Search flashcards") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            trailingIcon = {
+                if (state.searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onEvent(FlashcardListEvent.UpdateSearchQuery("")) }) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                    }
+                }
+            },
+            singleLine = true,
+        )
+
+        if (state.flashcards.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (state.searchQuery.isNotBlank()) {
+                        Text("No results for \"${state.searchQuery}\"", style = MaterialTheme.typography.titleMedium)
+                    } else {
+                        Text("No flashcards yet", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "Tap + to add your first card",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
-        }
-    } else {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(state.flashcards, key = { it.id }) { flashcard ->
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    FlashcardItemCard(
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(state.flashcards, key = { it.id }) { flashcard ->
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        FlashcardItemCard(
                         flashcard = flashcard,
                         onMenuClick = { expandedCardId = flashcard.id },
                     )
@@ -175,6 +200,8 @@ private fun FlashcardListContent(
                 }
             }
         }
+    }
+
     }
 
     when (val dialog = state.dialog) {
