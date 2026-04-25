@@ -20,6 +20,11 @@ class FlashcardRepository(private val flashcardDao: FlashcardDao) {
             entities.map { it.toDomain() }
         }
 
+    fun getAllDueCards(): Flow<List<Flashcard>> =
+        flashcardDao.getAllDueCards(System.currentTimeMillis()).map { entities ->
+            entities.map { it.toDomain() }
+        }
+
     fun search(deckId: Long, query: String): Flow<List<Flashcard>> =
         flashcardDao.search(deckId, query).map { entities ->
             entities.map { it.toDomain() }
