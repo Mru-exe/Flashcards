@@ -20,12 +20,12 @@ class ReviewRecordRepository(private val reviewRecordDao: ReviewRecordDao) {
     suspend fun countByDeckSince(deckId: Long, since: Long): Int =
         reviewRecordDao.countByDeckSince(deckId, since)
 
-    suspend fun countAllSince(since: Long): Int = reviewRecordDao.countAllSince(since)
+    fun countAllSince(since: Long): Flow<Int> = reviewRecordDao.countAllSince(since)
 
-    suspend fun countAll(): Int = reviewRecordDao.countAll()
+    fun countAll(): Flow<Int> = reviewRecordDao.countAll()
 
-    suspend fun getTop3ByRetention(): List<DeckRetentionStat> =
-        reviewRecordDao.getTop3ByRetention().map { r ->
-            DeckRetentionStat(r.deckId, r.deckName, r.totalReviews, r.goodReviews)
+    fun getTop3ByRetention(): Flow<List<DeckRetentionStat>> =
+        reviewRecordDao.getTop3ByRetention().map { results ->
+            results.map { r -> DeckRetentionStat(r.deckId, r.deckName, r.totalReviews, r.goodReviews) }
         }
 }

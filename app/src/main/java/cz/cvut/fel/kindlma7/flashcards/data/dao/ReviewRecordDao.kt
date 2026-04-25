@@ -30,10 +30,10 @@ interface ReviewRecordDao {
     suspend fun countByDeckSince(deckId: Long, since: Long): Int
 
     @Query("SELECT COUNT(*) FROM review_records WHERE reviewedAt >= :since")
-    suspend fun countAllSince(since: Long): Int
+    fun countAllSince(since: Long): Flow<Int>
 
     @Query("SELECT COUNT(*) FROM review_records")
-    suspend fun countAll(): Int
+    fun countAll(): Flow<Int>
 
     @Query("""
         SELECT d.id as deckId, d.name as deckName,
@@ -47,5 +47,5 @@ interface ReviewRecordDao {
         ORDER BY CAST(SUM(CASE WHEN rr.quality >= 3 THEN 1 ELSE 0 END) AS REAL) / COUNT(rr.id) DESC
         LIMIT 3
     """)
-    suspend fun getTop3ByRetention(): List<DeckRetentionResult>
+    fun getTop3ByRetention(): Flow<List<DeckRetentionResult>>
 }

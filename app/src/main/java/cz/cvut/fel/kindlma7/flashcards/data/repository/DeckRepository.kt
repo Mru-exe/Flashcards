@@ -13,14 +13,10 @@ class DeckRepository(
     private val flashcardDao: FlashcardDao
 ) {
 
-    fun getAll(): Flow<List<Deck>> = deckDao.getAll().map { entities ->
-        entities.map { entity ->
-            val deckId = entity.id
-            val cardCount = flashcardDao.getCardCount(deckId)
-            val dueCount = flashcardDao.getDueCount(deckId, System.currentTimeMillis())
-            entity.toDomain(cardCount, dueCount)
+    fun getAll(): Flow<List<Deck>> =
+        deckDao.getAllWithStats(System.currentTimeMillis()).map { results ->
+            results.map { it.toDomain() }
         }
-    }
 
     suspend fun getById(id: Long): Deck? {
         val entity = deckDao.getById(id) ?: return null
@@ -38,13 +34,10 @@ class DeckRepository(
         }
     }
 
-    fun search(query: String): Flow<List<Deck>> = deckDao.search(query).map { entities ->
-        entities.map { entity ->
-            val cardCount = flashcardDao.getCardCount(entity.id)
-            val dueCount = flashcardDao.getDueCount(entity.id, System.currentTimeMillis())
-            entity.toDomain(cardCount, dueCount)
+    fun search(query: String): Flow<List<Deck>> =
+        deckDao.searchWithStats(query, System.currentTimeMillis()).map { results ->
+            results.map { it.toDomain() }
         }
-    }
 
     suspend fun insert(deck: Deck): Long = deckDao.insert(deck.toEntity())
 

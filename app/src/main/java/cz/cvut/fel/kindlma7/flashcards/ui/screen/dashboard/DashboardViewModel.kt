@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -26,27 +27,26 @@ class DashboardViewModel(
     private val _effects = MutableSharedFlow<DashboardEffect>()
     val effects: SharedFlow<DashboardEffect> = _effects.asSharedFlow()
 
+    private val monthStart = Calendar.getInstance().apply {
+        set(Calendar.DAY_OF_MONTH, 1)
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }.timeInMillis
+
     init {
         viewModelScope.launch {
-            flashcardRepository.getAllDueCount().collectLatest { dueCount ->
-                runCatching {
-                    val monthStart = Calendar.getInstance().apply {
-                        set(Calendar.DAY_OF_MONTH, 1)
-                        set(Calendar.HOUR_OF_DAY, 0)
-                        set(Calendar.MINUTE, 0)
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }.timeInMillis
-                    val thisMonth = reviewRecordRepository.countAllSince(monthStart)
-                    val lifetime = reviewRecordRepository.countAll()
-                    val topDecks = reviewRecordRepository.getTop3ByRetention()
-                    DashboardUiState.Content(dueCount, thisMonth, lifetime, topDecks)
-                }.onSuccess { content ->
-                    _uiState.value = content
-                }.onFailure { e ->
-                    _uiState.value = DashboardUiState.Error(e.message ?: "Failed to load dashboard")
-                }
+            combine(
+                flashcardRepository.getAllDueCount(),
+                reviewRecordRepository.countAllSince(monthStart),
+                reviewRecordRepository.countAll(),
+                reviewRecordRepository.getTop3ByRetention(),
+            ) { dueCount, thisMonth, lifetime, topDecks ->
+                DashboardUiState.Content(dueCount, thisMonth, lifetime, topDecks) as DashboardUiState
             }
+                .catch { e -> emit(DashboardUiState.Error(e.message ?: "Failed to load dashboard")) }
+                .collect { _uiState.value = it }
         }
     }
 
