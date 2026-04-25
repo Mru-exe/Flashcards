@@ -8,6 +8,7 @@ sealed interface FlashcardListUiState {
     data class Content(
         val deck: Deck,
         val flashcards: List<Flashcard>,
+        val searchQuery: String = "",
         val dialog: DialogState? = null,
     ) : FlashcardListUiState
     data class Error(val message: String) : FlashcardListUiState

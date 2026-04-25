@@ -6,6 +6,7 @@ sealed interface DeckListUiState {
     data object Loading : DeckListUiState
     data class Content(
         val decks: List<Deck>,
+        val searchQuery: String = "",
         val dialog: DialogState? = null,
     ) : DeckListUiState
     data class Error(val message: String) : DeckListUiState

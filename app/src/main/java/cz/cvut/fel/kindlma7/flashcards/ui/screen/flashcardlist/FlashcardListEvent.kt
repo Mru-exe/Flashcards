@@ -14,4 +14,6 @@ sealed interface FlashcardListEvent {
 
     data object NavigateBack : FlashcardListEvent
     data object StartStudySession : FlashcardListEvent
+
+    data class UpdateSearchQuery(val query: String) : FlashcardListEvent
 }

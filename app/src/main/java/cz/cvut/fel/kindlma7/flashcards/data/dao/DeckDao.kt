@@ -32,4 +32,7 @@ interface DeckDao {
 
     @Query("SELECT * FROM decks WHERE topicId = :topicId ORDER BY createdAt DESC")
     fun getByTopic(topicId: Int): Flow<List<DeckEntity>>
+
+    @Query("SELECT * FROM decks WHERE name LIKE '%' || :query || '%' ORDER BY createdAt DESC")
+    fun search(query: String): Flow<List<DeckEntity>>
 }
