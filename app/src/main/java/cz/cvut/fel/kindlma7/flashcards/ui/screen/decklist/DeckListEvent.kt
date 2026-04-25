@@ -14,4 +14,6 @@ sealed interface DeckListEvent {
 
     data class OpenFlashcards(val deck: Deck) : DeckListEvent
     data class OpenStudySession(val deck: Deck) : DeckListEvent
+
+    data class UpdateSearchQuery(val query: String) : DeckListEvent
 }

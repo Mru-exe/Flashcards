@@ -11,9 +11,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -21,6 +23,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -117,26 +120,49 @@ private fun DeckListContent(
 ) {
     var expandedDeckId by remember { mutableStateOf<Long?>(null) }
 
-    if (state.decks.isEmpty()) {
-        Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("No decks yet", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    "Tap + to create your first deck",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+    Column(modifier = modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = state.searchQuery,
+            onValueChange = { onEvent(DeckListEvent.UpdateSearchQuery(it)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            placeholder = { Text("Search decks") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            trailingIcon = {
+                if (state.searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onEvent(DeckListEvent.UpdateSearchQuery("")) }) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                    }
+                }
+            },
+            singleLine = true,
+        )
+
+        if (state.decks.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (state.searchQuery.isNotBlank()) {
+                        Text("No results for \"${state.searchQuery}\"", style = MaterialTheme.typography.titleMedium)
+                    } else {
+                        Text("No decks yet", style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            "Tap + to create your first deck",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
             }
-        }
-    } else {
-        LazyColumn(
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(state.decks, key = { it.id }) { deck ->
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    DeckCard(
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(state.decks, key = { it.id }) { deck ->
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        DeckCard(
                         name = deck.name,
                         cardCount = deck.cardCount,
                         dueCount = deck.dueCount,
@@ -162,6 +188,8 @@ private fun DeckListContent(
                 }
             }
         }
+    }
+
     }
 
     when (val dialog = state.dialog) {

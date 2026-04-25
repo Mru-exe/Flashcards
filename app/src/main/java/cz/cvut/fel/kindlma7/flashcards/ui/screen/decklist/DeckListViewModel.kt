@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import cz.cvut.fel.kindlma7.flashcards.data.repository.DeckRepository
 import cz.cvut.fel.kindlma7.flashcards.domain.Deck
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
 sealed interface DeckListEffect {
@@ -20,6 +22,7 @@ sealed interface DeckListEffect {
     data class ShowError(val message: String) : DeckListEffect
 }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class DeckListViewModel(
     private val deckRepository: DeckRepository,
 ) : ViewModel() {
@@ -30,13 +33,19 @@ class DeckListViewModel(
     private val _effects = MutableSharedFlow<DeckListEffect>()
     val effects: SharedFlow<DeckListEffect> = _effects.asSharedFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+
     init {
         viewModelScope.launch {
-            deckRepository.getAll()
+            _searchQuery
+                .flatMapLatest { query ->
+                    if (query.isBlank()) deckRepository.getAll() else deckRepository.search(query)
+                }
                 .catch { e -> _uiState.value = DeckListUiState.Error(e.message ?: "Unknown error") }
                 .collect { decks ->
+                    val query = _searchQuery.value
                     val dialog = (_uiState.value as? DeckListUiState.Content)?.dialog
-                    _uiState.value = DeckListUiState.Content(decks, dialog)
+                    _uiState.value = DeckListUiState.Content(decks, query, dialog)
                 }
         }
     }
@@ -52,6 +61,7 @@ class DeckListViewModel(
             is DeckListEvent.ConfirmDeleteDeck -> deleteDeck(event.deck)
             is DeckListEvent.OpenFlashcards -> emit(DeckListEffect.NavigateToFlashcards(event.deck.id))
             is DeckListEvent.OpenStudySession -> emit(DeckListEffect.NavigateToStudySession(event.deck.id))
+            is DeckListEvent.UpdateSearchQuery -> _searchQuery.value = event.query
         }
     }
 
