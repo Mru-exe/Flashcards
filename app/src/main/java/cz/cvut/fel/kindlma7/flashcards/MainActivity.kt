@@ -35,6 +35,8 @@ import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.import.ImportScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.import.ImportViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
@@ -57,6 +59,15 @@ class MainActivity : ComponentActivity() {
 
     private val dashboardViewModel: DashboardViewModel by viewModels {
         DashboardViewModel.factory(appContainer.flashcardRepository, appContainer.reviewRecordRepository)
+    }
+
+    private val importViewModel: ImportViewModel by viewModels {
+        ImportViewModel.factory(
+            appContainer.deckRepository,
+            appContainer.flashcardRepository,
+            appContainer.triviaRepository,
+            appContainer.topicRepository,
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,7 +130,12 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(Route.Import.path) {
-                            //TODO: Implement import screen
+                            ImportScreen(
+                                viewModel = importViewModel,
+                                onNavigateToFlashcards = { deckId ->
+                                    navController.navigate(Route.FlashcardList.createRoute(deckId))
+                                },
+                            )
                         }
 
                         composable(
