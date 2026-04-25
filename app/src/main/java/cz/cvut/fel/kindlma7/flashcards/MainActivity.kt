@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -16,7 +17,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -25,14 +28,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.activity.viewModels
-import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModelProvider
 import cz.cvut.fel.kindlma7.flashcards.navigation.Route
-import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
-import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.REVIEW_ALL_DECK_ID
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
 
 private val bottomNavItems = listOf(
@@ -44,6 +49,10 @@ private val bottomNavItems = listOf(
 class MainActivity : ComponentActivity() {
     private val deckListViewModel: DeckListViewModel by viewModels {
         DeckListViewModel.factory((application as FlashcardsApplication).container.deckRepository)
+    }
+    private val dashboardViewModel: DashboardViewModel by viewModels {
+        val container = (application as FlashcardsApplication).container
+        DashboardViewModel.factory(container.flashcardRepository, container.reviewRecordRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,11 +90,16 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Route.DeckList.path,
+                        startDestination = Route.Dashboard.path,
                         modifier = Modifier.padding(innerPadding),
                     ) {
                         composable(Route.Dashboard.path) {
-                            //TODO: Implement dashboard screen
+                            DashboardScreen(
+                                viewModel = dashboardViewModel,
+                                onNavigateToReviewAll = {
+                                    navController.navigate(Route.StudySession.createRoute(REVIEW_ALL_DECK_ID))
+                                },
+                            )
                         }
 
                         composable(Route.DeckList.path) {
@@ -137,7 +151,21 @@ class MainActivity : ComponentActivity() {
                             ),
                         ) { backStack ->
                             val deckId = backStack.arguments!!.getLong(Route.StudySession.ARG_DECK_ID)
-                            //TODO: Implement study session screen
+                            val viewModel = remember(deckId) {
+                                ViewModelProvider(
+                                    backStack,
+                                    StudySessionViewModel.factory(
+                                        appContainer.flashcardRepository,
+                                        appContainer.reviewRecordRepository,
+                                        appContainer.deckRepository,
+                                        deckId,
+                                    )
+                                )[StudySessionViewModel::class.java]
+                            }
+                            StudySessionScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = { navController.popBackStack() },
+                            )
                         }
                     }
                 }
