@@ -47,9 +47,6 @@ private val bottomNavItems = listOf(
     Triple(Route.Import, "Import", Icons.Default.Search),
 )
 
-// Special deck id used to indicate "review all decks" when navigating to the study session.
-private const val REVIEW_ALL_DECK_ID: Long = -1L
-
 class MainActivity : ComponentActivity() {
     private val appContainer get() = (application as FlashcardsApplication).container
 
@@ -112,7 +109,7 @@ class MainActivity : ComponentActivity() {
                             DashboardScreen(
                                 viewModel = dashboardViewModel,
                                 onNavigateToReviewAll = {
-                                    navController.navigate(Route.StudySession.createRoute(REVIEW_ALL_DECK_ID))
+                                    navController.navigate(Route.StudySession.createRoute(StudySessionViewModel.REVIEW_ALL_DECK_ID))
                                 },
                             )
                         }

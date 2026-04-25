@@ -42,19 +42,31 @@ class StudySessionViewModel(
 
     init {
         viewModelScope.launch {
-            val deck = deckRepository.getById(deckId)
-            if (deck == null) {
-                _uiState.value = StudySessionUiState.Error("Deck not found")
-                return@launch
-            }
-            deckName = deck.name
-            runCatching {
-                flashcardRepository.getDueCards(deckId).first()
-            }.onSuccess { cards ->
-                dueCards = cards
-                showCurrentCard()
-            }.onFailure { e ->
-                _uiState.value = StudySessionUiState.Error(e.message ?: "Failed to load cards")
+            if (deckId == REVIEW_ALL_DECK_ID) {
+                deckName = "All Decks"
+                runCatching {
+                    flashcardRepository.getAllDueCards().first()
+                }.onSuccess { cards ->
+                    dueCards = cards
+                    showCurrentCard()
+                }.onFailure { e ->
+                    _uiState.value = StudySessionUiState.Error(e.message ?: "Failed to load cards")
+                }
+            } else {
+                val deck = deckRepository.getById(deckId)
+                if (deck == null) {
+                    _uiState.value = StudySessionUiState.Error("Deck not found")
+                    return@launch
+                }
+                deckName = deck.name
+                runCatching {
+                    flashcardRepository.getDueCards(deckId).first()
+                }.onSuccess { cards ->
+                    dueCards = cards
+                    showCurrentCard()
+                }.onFailure { e ->
+                    _uiState.value = StudySessionUiState.Error(e.message ?: "Failed to load cards")
+                }
             }
         }
     }
@@ -104,6 +116,8 @@ class StudySessionViewModel(
     }
 
     companion object {
+        const val REVIEW_ALL_DECK_ID: Long = -1L
+
         fun factory(
             flashcardRepository: FlashcardRepository,
             reviewRecordRepository: ReviewRecordRepository,
