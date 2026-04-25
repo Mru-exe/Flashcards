@@ -35,4 +35,9 @@ class FlashcardRepository(private val flashcardDao: FlashcardDao) {
     suspend fun delete(flashcard: Flashcard) = flashcardDao.delete(flashcard.toEntity())
 
     suspend fun deleteAll(flashcards: List<Flashcard>) = flashcardDao.deleteAll(flashcards.map { it.toEntity() })
+
+    fun getAllDueCards(): Flow<List<Flashcard>> =
+        flashcardDao.getAllDueCards(System.currentTimeMillis()).map { it.map { e -> e.toDomain() } }
+
+    fun observeAllDueCount(): Flow<Int> = flashcardDao.observeAllDueCount(System.currentTimeMillis())
 }
