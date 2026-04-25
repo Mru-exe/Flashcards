@@ -1,6 +1,6 @@
 package cz.cvut.fel.kindlma7.flashcards.ui.component
 
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
+import kotlinx.coroutines.launch
 
 enum class FlashcardSide { QUESTION, ANSWER }
 
@@ -32,19 +34,12 @@ fun FlashcardFace(
     onFlipped: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var flipped by remember { mutableStateOf(false) }
-    var clickable by remember { mutableStateOf(true) }
-    val rotation by animateFloatAsState(
-        targetValue = if (flipped) 180f else 0f,
-        animationSpec = tween(durationMillis = 300),
-        label = "card-flip",
-        finishedListener = {
-            clickable = true
-            if (flipped) onFlipped()
-        },
-    )
+    // Keyed on `front` so rotation snaps to 0f instantly on card change — no reverse animation.
+    val rotation = remember(front) { Animatable(0f) }
+    var clickable by remember(front) { mutableStateOf(true) }
+    val scope = rememberCoroutineScope()
 
-    val showBack = rotation > 90f
+    val showBack = rotation.value > 90f
     val side = if (showBack) FlashcardSide.ANSWER else FlashcardSide.QUESTION
     val text = if (showBack) back else front
     val containerColor = when (side) {
@@ -64,14 +59,18 @@ fun FlashcardFace(
         onClick = {
             if (clickable) {
                 clickable = false
-                flipped = !flipped
+                scope.launch {
+                    rotation.animateTo(180f, animationSpec = tween(durationMillis = 300))
+                    clickable = true
+                    onFlipped()
+                }
             }
         },
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 200.dp)
             .graphicsLayer {
-                rotationY = rotation
+                rotationY = rotation.value
                 cameraDistance = 12f * density
             },
         colors = CardDefaults.elevatedCardColors(containerColor = containerColor),
