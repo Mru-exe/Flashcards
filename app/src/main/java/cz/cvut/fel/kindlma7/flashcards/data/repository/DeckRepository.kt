@@ -38,6 +38,14 @@ class DeckRepository(
         }
     }
 
+    fun search(query: String): Flow<List<Deck>> = deckDao.search(query).map { entities ->
+        entities.map { entity ->
+            val cardCount = flashcardDao.getCardCount(entity.id)
+            val dueCount = flashcardDao.getDueCount(entity.id, System.currentTimeMillis())
+            entity.toDomain(cardCount, dueCount)
+        }
+    }
+
     suspend fun insert(deck: Deck): Long = deckDao.insert(deck.toEntity())
 
     suspend fun update(deck: Deck) = deckDao.update(deck.toEntity())
