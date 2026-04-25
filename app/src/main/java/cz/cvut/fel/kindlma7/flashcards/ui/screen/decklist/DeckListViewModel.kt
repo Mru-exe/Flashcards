@@ -56,7 +56,7 @@ class DeckListViewModel(
             is DeckListEvent.ShowEditDeckDialog -> setDialog(DeckListUiState.DialogState.EditDeck(event.deck))
             is DeckListEvent.ShowDeleteConfirmation -> setDialog(DeckListUiState.DialogState.ConfirmDelete(event.deck))
             is DeckListEvent.DismissDialog -> setDialog(null)
-            is DeckListEvent.SubmitCreateDeck -> createDeck(event.name)
+            is DeckListEvent.SubmitCreateDeck -> createDeck(event.name, event.topic)
             is DeckListEvent.SubmitRenameDeck -> renameDeck(event.deck, event.newName)
             is DeckListEvent.ConfirmDeleteDeck -> deleteDeck(event.deck)
             is DeckListEvent.OpenFlashcards -> emit(DeckListEffect.NavigateToFlashcards(event.deck.id))
@@ -70,11 +70,14 @@ class DeckListViewModel(
         _uiState.value = current.copy(dialog = dialog)
     }
 
-    private fun createDeck(name: String) {
+    private fun createDeck(name: String, topic: String) {
         setDialog(null)
         viewModelScope.launch {
-            runCatching { deckRepository.insert(Deck(name = name, cardCount = 0, dueCount = 0)) }
-                .onFailure { e -> _effects.emit(DeckListEffect.ShowError(e.message ?: "Failed to create deck")) }
+            runCatching {
+                deckRepository.insert(
+                    Deck(name = name, topic = topic, cardCount = 0, dueCount = 0)
+                )
+            }.onFailure { e -> _effects.emit(DeckListEffect.ShowError(e.message ?: "Failed to create deck")) }
         }
     }
 

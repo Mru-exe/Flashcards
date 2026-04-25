@@ -13,6 +13,7 @@ sealed interface ImportEvent {
     data object ImportFromTrivia : ImportEvent
 
     data class UpdateCsvDeckName(val name: String) : ImportEvent
+    data class UpdateCsvTopic(val topic: String) : ImportEvent
     data class CsvFileSelected(val uri: Uri, val fileName: String, val lines: List<String>) : ImportEvent
     data object ImportFromCsv : ImportEvent
 

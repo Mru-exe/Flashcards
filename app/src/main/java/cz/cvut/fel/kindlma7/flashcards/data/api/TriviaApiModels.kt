@@ -1,3 +1,5 @@
+@file:kotlin.OptIn(kotlinx.serialization.InternalSerializationApi::class)
+
 package cz.cvut.fel.kindlma7.flashcards.data.api
 
 import kotlinx.serialization.SerialName

@@ -1,10 +1,13 @@
 package cz.cvut.fel.kindlma7.flashcards.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -28,6 +31,8 @@ fun DeckCard(
     onClick: () -> Unit,
     onMenuClick: () -> Unit,
     modifier: Modifier = Modifier,
+    topic: String,
+    dropdownMenu: @Composable () -> Unit = {},
 ) {
     Card(
         onClick = onClick,
@@ -41,26 +46,53 @@ fun DeckCard(
                 .padding(horizontal = 16.dp, vertical = 12.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
                     text = name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    text = "$cardCount cards | $dueCount due",
+                    text = "$dueCount due / $cardCount cards",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Deck options",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+            Column(modifier = Modifier.padding(start = 6.dp), horizontalAlignment = Alignment.End) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(8.dp),
+                        )
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                ) {
+                    Text(
+                        text = topic,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                }
+            }
+            Box {
+                IconButton(onClick = onMenuClick) {
+                    Box(
+                        modifier = Modifier.background(
+                            color = MaterialTheme.colorScheme.surfaceContainerLow,
+                            shape = RoundedCornerShape(50),
+                        )
+                        .padding(5.dp),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Deck options",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                dropdownMenu()
             }
         }
     }
@@ -72,6 +104,7 @@ private fun DeckCardPreview() {
     FlashcardsTheme {
         DeckCard(
             name = "Kotlin Coroutines",
+            topic = "Programming",
             cardCount = 42,
             dueCount = 7,
             onClick = {},

@@ -218,15 +218,13 @@ private fun TriviaTabContent(
             }
         }
 
-        // Difficulty + deck name + import button
+        // Difficulty + topic + deck name + import button
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            // Make list items clickable — need to wrap with clickable modifier separately
-            // (done below via a separate wrapper). Here is the bottom panel.
             Text("Difficulty", style = MaterialTheme.typography.labelMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Difficulty.entries.forEach { difficulty ->
@@ -237,6 +235,15 @@ private fun TriviaTabContent(
                     )
                 }
             }
+            OutlinedTextField(
+                value = state.selectedTopic?.name ?: "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Topic") },
+                singleLine = true,
+                placeholder = { Text("Select a category above") },
+                modifier = Modifier.fillMaxWidth(),
+            )
             OutlinedTextField(
                 value = state.deckName,
                 onValueChange = { onEvent(ImportEvent.UpdateTriviaDeckName(it)) },
@@ -299,6 +306,13 @@ private fun CsvTabContent(
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
+        OutlinedTextField(
+            value = state.topic,
+            onValueChange = { onEvent(ImportEvent.UpdateCsvTopic(it)) },
+            label = { Text("Topic") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+        )
 
         OutlinedButton(
             onClick = { filePickerLauncher.launch(arrayOf("text/csv", "text/plain", "*/*")) },
@@ -323,7 +337,7 @@ private fun CsvTabContent(
             }
         } else {
             Text(
-                text = "Expected format: question,answer (one per row)",
+                text = "Expected format: ',' (comma) separated values with 'question,answer' on each line.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -333,7 +347,7 @@ private fun CsvTabContent(
 
         Button(
             onClick = { onEvent(ImportEvent.ImportFromCsv) },
-            enabled = state.fileUri != null && state.deckName.isNotBlank() && (state.rowCount ?: 0) > 0 && !importing,
+            enabled = state.fileUri != null && state.deckName.isNotBlank() && state.topic.isNotBlank() && (state.rowCount ?: 0) > 0 && !importing,
             modifier = Modifier.fillMaxWidth(),
         ) {
             if (importing) {

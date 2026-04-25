@@ -19,5 +19,6 @@ data class DeckEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String,
     val topicId: Int? = null,
+    val topic: String,
     val createdAt: Long = System.currentTimeMillis()
 )

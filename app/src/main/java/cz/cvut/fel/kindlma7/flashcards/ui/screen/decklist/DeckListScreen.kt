@@ -161,31 +161,32 @@ private fun DeckListContent(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(state.decks, key = { it.id }) { deck ->
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        DeckCard(
+                    DeckCard(
                         name = deck.name,
+                        topic = deck.topic,
                         cardCount = deck.cardCount,
                         dueCount = deck.dueCount,
                         onClick = { onEvent(DeckListEvent.OpenFlashcards(deck)) },
                         onMenuClick = { expandedDeckId = deck.id },
+                        dropdownMenu = {
+                            DeckDropdownMenu(
+                                expanded = expandedDeckId == deck.id,
+                                onDismiss = { expandedDeckId = null },
+                                onStudy = {
+                                    expandedDeckId = null
+                                    onEvent(DeckListEvent.OpenStudySession(deck))
+                                },
+                                onRename = {
+                                    expandedDeckId = null
+                                    onEvent(DeckListEvent.ShowEditDeckDialog(deck))
+                                },
+                                onDelete = {
+                                    expandedDeckId = null
+                                    onEvent(DeckListEvent.ShowDeleteConfirmation(deck))
+                                },
+                            )
+                        },
                     )
-                    DeckDropdownMenu(
-                        expanded = expandedDeckId == deck.id,
-                        onDismiss = { expandedDeckId = null },
-                        onStudy = {
-                            expandedDeckId = null
-                            onEvent(DeckListEvent.OpenStudySession(deck))
-                        },
-                        onRename = {
-                            expandedDeckId = null
-                            onEvent(DeckListEvent.ShowEditDeckDialog(deck))
-                        },
-                        onDelete = {
-                            expandedDeckId = null
-                            onEvent(DeckListEvent.ShowDeleteConfirmation(deck))
-                        },
-                    )
-                }
             }
         }
     }
@@ -194,7 +195,7 @@ private fun DeckListContent(
 
     when (val dialog = state.dialog) {
         is DeckListUiState.DialogState.CreateDeck -> CreateDeckDialog(
-            onConfirm = { name -> onEvent(DeckListEvent.SubmitCreateDeck(name)) },
+            onConfirm = { name, topic -> onEvent(DeckListEvent.SubmitCreateDeck(name, topic)) },
             onDismiss = { onEvent(DeckListEvent.DismissDialog) },
         )
         is DeckListUiState.DialogState.EditDeck -> EditDeckDialog(
@@ -246,24 +247,34 @@ private fun DeckDropdownMenu(
 
 @Composable
 private fun CreateDeckDialog(
-    onConfirm: (String) -> Unit,
+    onConfirm: (String, String) -> Unit,
     onDismiss: () -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
+    var topic by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("New deck") },
         text = {
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Deck name") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Deck name") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                OutlinedTextField(
+                    value = topic,
+                    onValueChange = { topic = it },
+                    label = { Text("Topic") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         },
         confirmButton = {
-            TextButton(onClick = { onConfirm(name) }, enabled = name.isNotBlank()) {
+            TextButton(onClick = { onConfirm(name, topic) }, enabled = name.isNotBlank() && topic.isNotBlank()) {
                 Text("Create")
             }
         },

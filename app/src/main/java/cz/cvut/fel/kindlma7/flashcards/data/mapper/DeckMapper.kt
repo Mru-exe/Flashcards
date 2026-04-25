@@ -8,6 +8,7 @@ fun DeckEntity.toDomain(cardCount: Int, dueCount: Int): Deck {
         id = id,
         name = name,
         topicId = topicId,
+        topic = topic,
         cardCount = cardCount,
         dueCount = dueCount
     )
@@ -17,6 +18,7 @@ fun Deck.toEntity(): DeckEntity {
     return DeckEntity(
         id = id,
         name = name,
-        topicId = topicId
+        topicId = topicId,
+        topic = topic
     )
 }

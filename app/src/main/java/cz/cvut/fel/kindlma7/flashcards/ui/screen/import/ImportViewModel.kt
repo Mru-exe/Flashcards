@@ -56,6 +56,7 @@ class ImportViewModel(
             is ImportEvent.UpdateTriviaDeckName -> updateContent { it.copy(trivia = it.trivia.copy(deckName = event.name)) }
             is ImportEvent.ImportFromTrivia -> importFromTrivia()
             is ImportEvent.UpdateCsvDeckName -> updateContent { it.copy(csv = it.csv.copy(deckName = event.name)) }
+            is ImportEvent.UpdateCsvTopic -> updateContent { it.copy(csv = it.csv.copy(topic = event.topic)) }
             is ImportEvent.CsvFileSelected -> {
                 val result = CsvParser.parse(event.lines)
                 updateContent {
@@ -101,7 +102,7 @@ class ImportViewModel(
                 val pairs = triviaRepository.fetchQuestions(topic.id, difficulty.apiValue)
                 topicRepository.syncFromApi(listOf(topic))
                 val deckId = deckRepository.insert(
-                    Deck(name = deckName, topicId = topic.id, cardCount = 0, dueCount = 0)
+                    Deck(name = deckName, topicId = topic.id, topic = topic.name, cardCount = 0, dueCount = 0)
                 )
                 flashcardRepository.insertAll(pairs.map { (q, a) ->
                     Flashcard(deckId = deckId, question = q, answer = a)
@@ -122,6 +123,7 @@ class ImportViewModel(
     private fun importFromCsv() {
         val content = _uiState.value as? ImportUiState.Content ?: return
         val deckName = content.csv.deckName.trim().ifBlank { return }
+        val topic = content.csv.topic.trim().ifBlank { return }
         if (content.csv.fileUri == null) return
 
         updateContent { it.copy(importing = true) }
@@ -130,7 +132,7 @@ class ImportViewModel(
                 val result = CsvParser.parse(content.csv.lines)
                 if (result.pairs.isEmpty()) throw IllegalStateException("No valid rows found in the CSV file")
                 val deckId = deckRepository.insert(
-                    Deck(name = deckName, cardCount = 0, dueCount = 0)
+                    Deck(name = deckName, topic = topic, cardCount = 0, dueCount = 0)
                 )
                 flashcardRepository.insertAll(result.pairs.map { (q, a) ->
                     Flashcard(deckId = deckId, question = q, answer = a)

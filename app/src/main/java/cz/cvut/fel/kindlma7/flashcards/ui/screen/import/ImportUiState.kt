@@ -30,6 +30,7 @@ data class TriviaState(
 
 data class CsvState(
     val deckName: String = "",
+    val topic: String = "",
     val fileUri: Uri? = null,
     val fileName: String? = null,
     val rowCount: Int? = null,

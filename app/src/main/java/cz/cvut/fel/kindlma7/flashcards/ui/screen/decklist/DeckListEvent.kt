@@ -8,7 +8,7 @@ sealed interface DeckListEvent {
     data class ShowDeleteConfirmation(val deck: Deck) : DeckListEvent
     data object DismissDialog : DeckListEvent
 
-    data class SubmitCreateDeck(val name: String) : DeckListEvent
+    data class SubmitCreateDeck(val name: String, val topic: String) : DeckListEvent
     data class SubmitRenameDeck(val deck: Deck, val newName: String) : DeckListEvent
     data class ConfirmDeleteDeck(val deck: Deck) : DeckListEvent
 
