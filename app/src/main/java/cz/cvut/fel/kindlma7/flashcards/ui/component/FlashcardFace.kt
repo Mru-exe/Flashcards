@@ -29,6 +29,7 @@ enum class FlashcardSide { QUESTION, ANSWER }
 fun FlashcardFace(
     front: String,
     back: String,
+    onFlipped: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var flipped by remember { mutableStateOf(false) }
@@ -37,7 +38,10 @@ fun FlashcardFace(
         targetValue = if (flipped) 180f else 0f,
         animationSpec = tween(durationMillis = 300),
         label = "card-flip",
-        finishedListener = { clickable = true },
+        finishedListener = {
+            clickable = true
+            if (flipped) onFlipped()
+        },
     )
 
     val showBack = rotation > 90f

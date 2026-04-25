@@ -33,11 +33,8 @@ import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListViewModel
-import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
-import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionViewModel
-import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.REVIEW_ALL_DECK_ID
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
 
 private val bottomNavItems = listOf(
