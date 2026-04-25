@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import cz.cvut.fel.kindlma7.flashcards.data.entity.DeckRetentionResult
 import cz.cvut.fel.kindlma7.flashcards.data.entity.ReviewRecordEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -27,4 +28,24 @@ interface ReviewRecordDao {
         AND reviewedAt >= :since
     """)
     suspend fun countByDeckSince(deckId: Long, since: Long): Int
+
+    @Query("SELECT COUNT(*) FROM review_records WHERE reviewedAt >= :since")
+    suspend fun countAllSince(since: Long): Int
+
+    @Query("SELECT COUNT(*) FROM review_records")
+    suspend fun countAll(): Int
+
+    @Query("""
+        SELECT d.id as deckId, d.name as deckName,
+               COUNT(rr.id) as totalReviews,
+               SUM(CASE WHEN rr.quality >= 3 THEN 1 ELSE 0 END) as goodReviews
+        FROM decks d
+        INNER JOIN flashcards f ON f.deckId = d.id
+        INNER JOIN review_records rr ON rr.flashcardId = f.id
+        GROUP BY d.id, d.name
+        HAVING COUNT(rr.id) > 0
+        ORDER BY CAST(SUM(CASE WHEN rr.quality >= 3 THEN 1 ELSE 0 END) AS REAL) / COUNT(rr.id) DESC
+        LIMIT 3
+    """)
+    suspend fun getTop3ByRetention(): List<DeckRetentionResult>
 }
