@@ -33,6 +33,8 @@ import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScre
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
 
 private val bottomNavItems = listOf(
@@ -137,7 +139,21 @@ class MainActivity : ComponentActivity() {
                             ),
                         ) { backStack ->
                             val deckId = backStack.arguments!!.getLong(Route.StudySession.ARG_DECK_ID)
-                            //TODO: Implement study session screen
+                            val viewModel = remember(deckId) {
+                                ViewModelProvider(
+                                    backStack,
+                                    StudySessionViewModel.factory(
+                                        appContainer.flashcardRepository,
+                                        appContainer.reviewRecordRepository,
+                                        appContainer.deckRepository,
+                                        deckId,
+                                    )
+                                )[StudySessionViewModel::class.java]
+                            }
+                            StudySessionScreen(
+                                viewModel = viewModel,
+                                onNavigateBack = { navController.popBackStack() },
+                            )
                         }
                     }
                 }
