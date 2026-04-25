@@ -33,6 +33,8 @@ import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.decklist.DeckListViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
@@ -42,6 +44,9 @@ private val bottomNavItems = listOf(
     Triple(Route.DeckList, "My Decks", Icons.AutoMirrored.Filled.List),
     Triple(Route.Import, "Import", Icons.Default.Search),
 )
+
+// Special deck id used to indicate "review all decks" when navigating to the study session.
+private const val REVIEW_ALL_DECK_ID: Long = -1L
 
 class MainActivity : ComponentActivity() {
     private val appContainer get() = (application as FlashcardsApplication).container
