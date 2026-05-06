@@ -51,4 +51,7 @@ interface FlashcardDao {
 
      @Query("SELECT COUNT(*) FROM flashcards WHERE nextReviewAt <= :now")
      fun getAllDueCount(now: Long): Flow<Int>
+
+     @Query("SELECT COUNT(*) FROM flashcards WHERE nextReviewAt <= :now")
+     suspend fun getAllDueCountOnce(now: Long): Int
 }
