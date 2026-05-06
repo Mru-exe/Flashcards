@@ -27,6 +27,8 @@ class FlashcardRepository(private val flashcardDao: FlashcardDao) {
 
     fun getAllDueCount(): Flow<Int> = flashcardDao.getAllDueCount(System.currentTimeMillis())
 
+    suspend fun getAllDueCountOnce(): Int = flashcardDao.getAllDueCountOnce(System.currentTimeMillis())
+
     fun search(deckId: Long, query: String): Flow<List<Flashcard>> =
         flashcardDao.search(deckId, query).map { entities ->
             entities.map { it.toDomain() }
