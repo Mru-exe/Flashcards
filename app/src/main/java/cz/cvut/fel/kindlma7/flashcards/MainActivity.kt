@@ -1,8 +1,12 @@
 package cz.cvut.fel.kindlma7.flashcards
 
 import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -15,15 +19,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,6 +45,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.navigation.Route
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.dashboard.DashboardViewModel
@@ -79,11 +92,79 @@ class MainActivity : ComponentActivity() {
         setContent {
             FlashcardsTheme {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val activity = LocalContext.current as ComponentActivity
+                    var showRationale by remember { mutableStateOf(false) }
+                    var showGoToSettings by remember { mutableStateOf(false) }
+
                     val permissionLauncher = rememberLauncherForActivityResult(
                         ActivityResultContracts.RequestPermission()
-                    ) { }
+                    ) { granted ->
+                        if (!granted && !ActivityCompat.shouldShowRequestPermissionRationale(
+                                activity, Manifest.permission.POST_NOTIFICATIONS,
+                            )
+                        ) {
+                            showGoToSettings = true
+                        }
+                    }
+
                     LaunchedEffect(Unit) {
-                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        when {
+                            ContextCompat.checkSelfPermission(
+                                activity, Manifest.permission.POST_NOTIFICATIONS,
+                            ) == PackageManager.PERMISSION_GRANTED -> Unit
+
+                            ActivityCompat.shouldShowRequestPermissionRationale(
+                                activity, Manifest.permission.POST_NOTIFICATIONS,
+                            ) -> showRationale = true
+
+                            else -> permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    }
+
+                    if (showRationale) {
+                        AlertDialog(
+                            onDismissRequest = { showRationale = false },
+                            title = { Text(stringResource(R.string.permission_notifications_rationale_title)) },
+                            text = { Text(stringResource(R.string.permission_notifications_rationale_message)) },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    showRationale = false
+                                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }) {
+                                    Text(stringResource(R.string.permission_notifications_rationale_allow))
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showRationale = false }) {
+                                    Text(stringResource(R.string.action_cancel))
+                                }
+                            },
+                        )
+                    }
+
+                    if (showGoToSettings) {
+                        AlertDialog(
+                            onDismissRequest = { showGoToSettings = false },
+                            title = { Text(stringResource(R.string.permission_notifications_settings_title)) },
+                            text = { Text(stringResource(R.string.permission_notifications_settings_message)) },
+                            confirmButton = {
+                                TextButton(onClick = {
+                                    showGoToSettings = false
+                                    activity.startActivity(
+                                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                            data = Uri.fromParts("package", activity.packageName, null)
+                                        }
+                                    )
+                                }) {
+                                    Text(stringResource(R.string.permission_notifications_settings_open))
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showGoToSettings = false }) {
+                                    Text(stringResource(R.string.action_cancel))
+                                }
+                            },
+                        )
                     }
                 }
 

@@ -6,6 +6,14 @@
     <string name="notification_title">Flashcards reminder</string>
     <string name="notification_message">%d cards are due today!</string>
 
+    <!-- Notification permission dialogs -->
+    <string name="permission_notifications_rationale_title">Allow Notifications</string>
+    <string name="permission_notifications_rationale_message">Flashcards sends a daily reminder when cards are due for review. Allow notifications to stay on track with your studies.</string>
+    <string name="permission_notifications_rationale_allow">Allow</string>
+    <string name="permission_notifications_settings_title">Notifications Disabled</string>
+    <string name="permission_notifications_settings_message">Notifications are permanently disabled. To receive study reminders, open the app settings and enable them manually.</string>
+    <string name="permission_notifications_settings_open">Open Settings</string>
+
     <!-- Shared actions -->
     <string name="action_cancel">Cancel</string>
     <string name="action_create">Create</string>
