@@ -25,9 +25,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.domain.DeckRetentionStat
 import kotlin.math.roundToInt
 
@@ -50,7 +52,7 @@ fun DashboardScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("Dashboard") }) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.screen_dashboard_title)) }) },
     ) { innerPadding ->
         when (val state = uiState) {
             DashboardUiState.Loading -> {
@@ -107,8 +109,8 @@ private fun DashboardContent(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(
-                text = if (state.totalDueCards > 0) "Review All · ${state.totalDueCards} due"
-                       else "Nothing due today",
+                text = if (state.totalDueCards > 0) stringResource(R.string.dashboard_review_all, state.totalDueCards)
+                       else stringResource(R.string.dashboard_nothing_due),
             )
         }
 
@@ -136,8 +138,8 @@ private fun ReviewStatsCard(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            StatItem(label = "This month", value = reviewsThisMonth.toString())
-            StatItem(label = "Lifetime", value = reviewsLifetime.toString())
+            StatItem(label = stringResource(R.string.dashboard_stat_this_month), value = reviewsThisMonth.toString())
+            StatItem(label = stringResource(R.string.dashboard_stat_lifetime), value = reviewsLifetime.toString())
         }
     }
 }
@@ -170,7 +172,7 @@ private fun RetentionCard(
     ElevatedCard(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "Top decks by retention",
+                text = stringResource(R.string.dashboard_top_decks_title),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

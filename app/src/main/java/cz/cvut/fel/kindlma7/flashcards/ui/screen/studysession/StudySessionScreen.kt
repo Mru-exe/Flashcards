@@ -30,8 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.ui.component.FlashcardFace
 import cz.cvut.fel.kindlma7.flashcards.ui.component.FlashcardReview
 
@@ -61,7 +64,7 @@ fun StudySessionScreen(
         else -> ""
     }
     val progress = (uiState as? StudySessionUiState.Active)?.let {
-        "${it.currentIndex + 1} / ${it.totalCards}"
+        stringResource(R.string.study_session_progress, it.currentIndex + 1, it.totalCards)
     }
 
     Scaffold(
@@ -72,7 +75,7 @@ fun StudySessionScreen(
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = { viewModel.onEvent(StudySessionEvent.NavigateBack) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.study_session_back_cd))
                     }
                 },
                 actions = {
@@ -136,9 +139,9 @@ private fun ErrorContent(message: String, modifier: Modifier = Modifier) {
 private fun EmptyContent(onBack: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("No cards due for review", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.study_session_no_cards), style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(16.dp))
-            Button(onClick = onBack) { Text("Back") }
+            Button(onClick = onBack) { Text(stringResource(R.string.action_back)) }
         }
     }
 }
@@ -147,14 +150,14 @@ private fun EmptyContent(onBack: () -> Unit, modifier: Modifier = Modifier) {
 private fun CompleteContent(reviewedCount: Int, onDone: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Session complete!", style = MaterialTheme.typography.headlineSmall)
+            Text(stringResource(R.string.study_session_complete_title), style = MaterialTheme.typography.headlineSmall)
             Spacer(Modifier.height(8.dp))
             Text(
-                "Reviewed $reviewedCount card${if (reviewedCount == 1) "" else "s"}",
+                pluralStringResource(R.plurals.study_session_reviewed, reviewedCount, reviewedCount),
                 style = MaterialTheme.typography.bodyLarge,
             )
             Spacer(Modifier.height(24.dp))
-            Button(onClick = onDone) { Text("Done") }
+            Button(onClick = onDone) { Text(stringResource(R.string.study_session_done)) }
         }
     }
 }

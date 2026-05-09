@@ -46,8 +46,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.domain.Flashcard
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,12 +82,12 @@ fun FlashcardListScreen(
                 title = { Text(deckName) },
                 navigationIcon = {
                     IconButton(onClick = { viewModel.onEvent(FlashcardListEvent.NavigateBack) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.flashcard_list_back_cd))
                     }
                 },
                 actions = {
                     IconButton(onClick = { viewModel.onEvent(FlashcardListEvent.StartStudySession) }) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = "Start study session")
+                        Icon(Icons.Default.PlayArrow, contentDescription = stringResource(R.string.flashcard_list_start_session_cd))
                     }
                 },
             )
@@ -96,7 +98,7 @@ fun FlashcardListScreen(
                 FloatingActionButton(
                     onClick = { viewModel.onEvent(FlashcardListEvent.ShowCreateFlashcardDialog) },
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add flashcard")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.flashcard_list_fab_cd))
                 }
             }
         },
@@ -146,12 +148,12 @@ private fun FlashcardListContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            placeholder = { Text("Search flashcards") },
+            placeholder = { Text(stringResource(R.string.flashcard_list_search_placeholder)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             trailingIcon = {
                 if (state.searchQuery.isNotEmpty()) {
                     IconButton(onClick = { onEvent(FlashcardListEvent.UpdateSearchQuery("")) }) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear_search))
                     }
                 }
             },
@@ -162,11 +164,11 @@ private fun FlashcardListContent(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     if (state.searchQuery.isNotBlank()) {
-                        Text("No results for \"${state.searchQuery}\"", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.label_no_results, state.searchQuery), style = MaterialTheme.typography.titleMedium)
                     } else {
-                        Text("No flashcards yet", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.flashcard_list_empty_title), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "Tap + to add your first card",
+                            stringResource(R.string.flashcard_list_empty_hint),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -261,7 +263,7 @@ private fun FlashcardItemCard(
             IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Card options",
+                    contentDescription = stringResource(R.string.flashcard_menu_cd),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -278,12 +280,12 @@ private fun FlashcardDropdownMenu(
 ) {
     DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
         DropdownMenuItem(
-            text = { Text("Edit") },
+            text = { Text(stringResource(R.string.flashcard_menu_edit)) },
             leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
             onClick = onEdit,
         )
         DropdownMenuItem(
-            text = { Text("Delete") },
+            text = { Text(stringResource(R.string.action_delete)) },
             leadingIcon = {
                 Icon(
                     Icons.Default.Delete,
@@ -305,19 +307,19 @@ private fun CreateFlashcardDialog(
     var answer by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New flashcard") },
+        title = { Text(stringResource(R.string.flashcard_create_dialog_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = question,
                     onValueChange = { question = it },
-                    label = { Text("Question") },
+                    label = { Text(stringResource(R.string.label_question)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = answer,
                     onValueChange = { answer = it },
-                    label = { Text("Answer") },
+                    label = { Text(stringResource(R.string.label_answer)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -326,10 +328,10 @@ private fun CreateFlashcardDialog(
             TextButton(
                 onClick = { onConfirm(question, answer) },
                 enabled = question.isNotBlank() && answer.isNotBlank(),
-            ) { Text("Create") }
+            ) { Text(stringResource(R.string.action_create)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }
@@ -345,19 +347,19 @@ private fun EditFlashcardDialog(
     val changed = question != flashcard.question || answer != flashcard.answer
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Edit flashcard") },
+        title = { Text(stringResource(R.string.flashcard_edit_dialog_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = question,
                     onValueChange = { question = it },
-                    label = { Text("Question") },
+                    label = { Text(stringResource(R.string.label_question)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = answer,
                     onValueChange = { answer = it },
-                    label = { Text("Answer") },
+                    label = { Text(stringResource(R.string.label_answer)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -366,10 +368,10 @@ private fun EditFlashcardDialog(
             TextButton(
                 onClick = { onConfirm(question, answer) },
                 enabled = question.isNotBlank() && answer.isNotBlank() && changed,
-            ) { Text("Save") }
+            ) { Text(stringResource(R.string.action_save)) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }
@@ -382,15 +384,15 @@ private fun ConfirmDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete flashcard") },
-        text = { Text("Delete this card? This cannot be undone.\n\n\"${flashcard.question.take(60)}\"") },
+        title = { Text(stringResource(R.string.flashcard_delete_dialog_title)) },
+        text = { Text(stringResource(R.string.flashcard_delete_dialog_message, flashcard.question.take(60))) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Delete", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }

@@ -1,5 +1,6 @@
 package cz.cvut.fel.kindlma7.flashcards.ui.component
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,17 +14,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
 //TODO: zkontrolovat quality modifiery podle SM-2 specifikace
 //TODO: Upravit barvy podle nového theme
 
-enum class ReviewRating(val label: String, val quality: Int) {
-    Again("Again", 0),
-    Hard("Hard", 2),
-    Okay("Okay", 3),
-    Easy("Easy", 5),
+enum class ReviewRating(@param:StringRes val labelRes: Int, val quality: Int) {
+    Again(R.string.rating_again, 0),
+    Hard(R.string.rating_hard, 2),
+    Okay(R.string.rating_okay, 3),
+    Easy(R.string.rating_easy, 5),
 }
 
 @Composable
@@ -46,7 +49,7 @@ fun FlashcardReview(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = rating.label,
+                        text = stringResource(rating.labelRes),
                         style = MaterialTheme.typography.labelLarge,
                     )
                 }

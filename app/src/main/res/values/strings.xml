@@ -1,6 +1,103 @@
 <resources>
     <string name="app_name">Flashcards</string>
+
+    <!-- Notifications -->
     <string name="notification_channel_name">Study Reminders</string>
     <string name="notification_title">Flashcards reminder</string>
     <string name="notification_message">%d cards are due today!</string>
+
+    <!-- Shared actions -->
+    <string name="action_cancel">Cancel</string>
+    <string name="action_create">Create</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_back">Back</string>
+    <string name="action_import">Import</string>
+    <string name="action_retry">Retry</string>
+    <string name="action_clear_search">Clear search</string>
+
+    <!-- Shared labels -->
+    <string name="label_deck_name">Deck name</string>
+    <string name="label_topic">Topic</string>
+    <string name="label_question">Question</string>
+    <string name="label_answer">Answer</string>
+    <string name="label_no_results">No results for \"%s\"</string>
+
+    <!-- Dashboard -->
+    <string name="screen_dashboard_title">Dashboard</string>
+    <string name="dashboard_review_all">Review All · %d due</string>
+    <string name="dashboard_nothing_due">Nothing due today</string>
+    <string name="dashboard_stat_this_month">This month</string>
+    <string name="dashboard_stat_lifetime">Lifetime</string>
+    <string name="dashboard_top_decks_title">Top decks by retention</string>
+
+    <!-- DeckList -->
+    <string name="screen_deck_list_title">My Decks</string>
+    <string name="deck_list_fab_cd">Create deck</string>
+    <string name="deck_list_search_placeholder">Search decks</string>
+    <string name="deck_list_empty_title">No decks yet</string>
+    <string name="deck_list_empty_hint">Tap + to create your first deck</string>
+    <string name="deck_menu_study">Study</string>
+    <string name="deck_create_dialog_title">New deck</string>
+    <string name="deck_rename_dialog_title">Rename deck</string>
+    <string name="deck_delete_dialog_title">Delete deck</string>
+    <string name="deck_delete_dialog_message">Delete \"%s\"? This cannot be undone.</string>
+
+    <!-- FlashcardList -->
+    <string name="flashcard_list_back_cd">Back</string>
+    <string name="flashcard_list_start_session_cd">Start study session</string>
+    <string name="flashcard_list_fab_cd">Add flashcard</string>
+    <string name="flashcard_list_search_placeholder">Search flashcards</string>
+    <string name="flashcard_list_empty_title">No flashcards yet</string>
+    <string name="flashcard_list_empty_hint">Tap + to add your first card</string>
+    <string name="flashcard_menu_cd">Card options</string>
+    <string name="flashcard_menu_edit">Edit</string>
+    <string name="flashcard_create_dialog_title">New flashcard</string>
+    <string name="flashcard_edit_dialog_title">Edit flashcard</string>
+    <string name="flashcard_delete_dialog_title">Delete flashcard</string>
+    <string name="flashcard_delete_dialog_message">Delete this card? This cannot be undone.\n\n\"%s\"</string>
+
+    <!-- StudySession -->
+    <string name="study_session_back_cd">Back</string>
+    <string name="study_session_progress">%1$d / %2$d</string>
+    <string name="study_session_no_cards">No cards due for review</string>
+    <string name="study_session_complete_title">Session complete!</string>
+    <string name="study_session_done">Done</string>
+
+    <!-- Import -->
+    <string name="screen_import_title">Import</string>
+    <string name="import_tab_trivia">Trivia API</string>
+    <string name="import_tab_csv">CSV File</string>
+    <string name="import_trivia_search_placeholder">Search categories</string>
+    <string name="import_trivia_no_categories">No categories found</string>
+    <string name="import_trivia_selected_cd">Selected</string>
+    <string name="import_trivia_difficulty_label">Difficulty</string>
+    <string name="import_trivia_topic_placeholder">Select a category above</string>
+    <string name="import_csv_choose_file">Choose File</string>
+    <string name="import_csv_format_hint">Expected format: \',\' (comma) separated values with \'question,answer\' on each line.</string>
+
+    <!-- DeckCard component -->
+    <string name="deck_card_options_cd">Deck options</string>
+    <string name="deck_card_stats">%1$d due / %2$d cards</string>
+
+    <!-- FlashcardFace component -->
+    <string name="flashcard_face_question">Question</string>
+    <string name="flashcard_face_answer">Answer</string>
+
+    <!-- ReviewRating labels -->
+    <string name="rating_again">Again</string>
+    <string name="rating_hard">Hard</string>
+    <string name="rating_okay">Okay</string>
+    <string name="rating_easy">Easy</string>
+
+    <!-- Plurals -->
+    <plurals name="study_session_reviewed">
+        <item quantity="one">Reviewed %d card</item>
+        <item quantity="other">Reviewed %d cards</item>
+    </plurals>
+    <plurals name="csv_cards_found">
+        <item quantity="one">%d card found</item>
+        <item quantity="other">%d cards found</item>
+    </plurals>
 </resources>

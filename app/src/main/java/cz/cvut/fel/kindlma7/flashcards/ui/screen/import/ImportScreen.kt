@@ -47,7 +47,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cz.cvut.fel.kindlma7.flashcards.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +73,7 @@ fun ImportScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("Import") }) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.screen_import_title)) }) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         when (val state = uiState) {
@@ -127,12 +130,12 @@ private fun ImportContent(
             Tab(
                 selected = tabIndex == 0,
                 onClick = { onEvent(ImportEvent.SelectTab(ImportTab.TRIVIA)) },
-                text = { Text("Trivia API") },
+                text = { Text(stringResource(R.string.import_tab_trivia)) },
             )
             Tab(
                 selected = tabIndex == 1,
                 onClick = { onEvent(ImportEvent.SelectTab(ImportTab.CSV)) },
-                text = { Text("CSV File") },
+                text = { Text(stringResource(R.string.import_tab_csv)) },
             )
         }
 
@@ -176,12 +179,12 @@ private fun TriviaTabContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            placeholder = { Text("Search categories") },
+            placeholder = { Text(stringResource(R.string.import_trivia_search_placeholder)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             trailingIcon = {
                 if (state.searchQuery.isNotEmpty()) {
                     IconButton(onClick = { onEvent(ImportEvent.UpdateTriviaSearch("")) }) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear_search))
                     }
                 }
             },
@@ -196,7 +199,7 @@ private fun TriviaTabContent(
                     .fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("No categories found", style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.import_trivia_no_categories), style = MaterialTheme.typography.bodyMedium)
             }
         } else {
             LazyColumn(modifier = Modifier.weight(1f)) {
@@ -205,7 +208,7 @@ private fun TriviaTabContent(
                         headlineContent = { Text(topic.name) },
                         trailingContent = {
                             if (state.selectedTopic?.id == topic.id) {
-                                Icon(Icons.Default.Check, contentDescription = "Selected")
+                                Icon(Icons.Default.Check, contentDescription = stringResource(R.string.import_trivia_selected_cd))
                             }
                         },
                         modifier = Modifier
@@ -225,7 +228,7 @@ private fun TriviaTabContent(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text("Difficulty", style = MaterialTheme.typography.labelMedium)
+            Text(stringResource(R.string.import_trivia_difficulty_label), style = MaterialTheme.typography.labelMedium)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Difficulty.entries.forEach { difficulty ->
                     FilterChip(
@@ -239,15 +242,15 @@ private fun TriviaTabContent(
                 value = state.selectedTopic?.name ?: "",
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Topic") },
+                label = { Text(stringResource(R.string.label_topic)) },
                 singleLine = true,
-                placeholder = { Text("Select a category above") },
+                placeholder = { Text(stringResource(R.string.import_trivia_topic_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
                 value = state.deckName,
                 onValueChange = { onEvent(ImportEvent.UpdateTriviaDeckName(it)) },
-                label = { Text("Deck name") },
+                label = { Text(stringResource(R.string.label_deck_name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -259,7 +262,7 @@ private fun TriviaTabContent(
                 if (importing) {
                     CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
                 } else {
-                    Text("Import")
+                    Text(stringResource(R.string.action_import))
                 }
             }
         }
@@ -302,14 +305,14 @@ private fun CsvTabContent(
         OutlinedTextField(
             value = state.deckName,
             onValueChange = { onEvent(ImportEvent.UpdateCsvDeckName(it)) },
-            label = { Text("Deck name") },
+            label = { Text(stringResource(R.string.label_deck_name)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
         OutlinedTextField(
             value = state.topic,
             onValueChange = { onEvent(ImportEvent.UpdateCsvTopic(it)) },
-            label = { Text("Topic") },
+            label = { Text(stringResource(R.string.label_topic)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
         )
@@ -318,7 +321,7 @@ private fun CsvTabContent(
             onClick = { filePickerLauncher.launch(arrayOf("text/csv", "text/plain", "*/*")) },
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Text("Choose File")
+            Text(stringResource(R.string.import_csv_choose_file))
         }
 
         if (state.fileName != null) {
@@ -329,7 +332,7 @@ private fun CsvTabContent(
                 )
                 if (state.rowCount != null) {
                     Text(
-                        text = "${state.rowCount} card${if (state.rowCount == 1) "" else "s"} found",
+                        text = pluralStringResource(R.plurals.csv_cards_found, state.rowCount, state.rowCount),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -337,7 +340,7 @@ private fun CsvTabContent(
             }
         } else {
             Text(
-                text = "Expected format: ',' (comma) separated values with 'question,answer' on each line.",
+                text = stringResource(R.string.import_csv_format_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -353,7 +356,7 @@ private fun CsvTabContent(
             if (importing) {
                 CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
             } else {
-                Text("Import")
+                Text(stringResource(R.string.action_import))
             }
         }
     }

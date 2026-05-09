@@ -41,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.domain.Deck
 import cz.cvut.fel.kindlma7.flashcards.ui.component.DeckCard
 
@@ -68,14 +70,14 @@ fun DeckListScreen(
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("My Decks") }) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.screen_deck_list_title)) }) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (uiState is DeckListUiState.Content) {
                 FloatingActionButton(
                     onClick = { viewModel.onEvent(DeckListEvent.ShowCreateDeckDialog) },
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = "Create deck")
+                    Icon(Icons.Default.Add, contentDescription = stringResource(R.string.deck_list_fab_cd))
                 }
             }
         },
@@ -127,12 +129,12 @@ private fun DeckListContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp),
-            placeholder = { Text("Search decks") },
+            placeholder = { Text(stringResource(R.string.deck_list_search_placeholder)) },
             leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
             trailingIcon = {
                 if (state.searchQuery.isNotEmpty()) {
                     IconButton(onClick = { onEvent(DeckListEvent.UpdateSearchQuery("")) }) {
-                        Icon(Icons.Default.Close, contentDescription = "Clear search")
+                        Icon(Icons.Default.Close, contentDescription = stringResource(R.string.action_clear_search))
                     }
                 }
             },
@@ -143,11 +145,11 @@ private fun DeckListContent(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     if (state.searchQuery.isNotBlank()) {
-                        Text("No results for \"${state.searchQuery}\"", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.label_no_results, state.searchQuery), style = MaterialTheme.typography.titleMedium)
                     } else {
-                        Text("No decks yet", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.deck_list_empty_title), style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "Tap + to create your first deck",
+                            stringResource(R.string.deck_list_empty_hint),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -222,17 +224,17 @@ private fun DeckDropdownMenu(
 ) {
     DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
         DropdownMenuItem(
-            text = { Text("Study") },
+            text = { Text(stringResource(R.string.deck_menu_study)) },
             leadingIcon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
             onClick = onStudy,
         )
         DropdownMenuItem(
-            text = { Text("Rename") },
+            text = { Text(stringResource(R.string.action_rename)) },
             leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) },
             onClick = onRename,
         )
         DropdownMenuItem(
-            text = { Text("Delete") },
+            text = { Text(stringResource(R.string.action_delete)) },
             leadingIcon = {
                 Icon(
                     Icons.Default.Delete,
@@ -254,20 +256,20 @@ private fun CreateDeckDialog(
     var topic by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New deck") },
+        title = { Text(stringResource(R.string.deck_create_dialog_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Deck name") },
+                    label = { Text(stringResource(R.string.label_deck_name)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = topic,
                     onValueChange = { topic = it },
-                    label = { Text("Topic") },
+                    label = { Text(stringResource(R.string.label_topic)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -275,11 +277,11 @@ private fun CreateDeckDialog(
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(name, topic) }, enabled = name.isNotBlank() && topic.isNotBlank()) {
-                Text("Create")
+                Text(stringResource(R.string.action_create))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }
@@ -293,12 +295,12 @@ private fun EditDeckDialog(
     var name by remember { mutableStateOf(deck.name) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Rename deck") },
+        title = { Text(stringResource(R.string.deck_rename_dialog_title)) },
         text = {
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Deck name") },
+                label = { Text(stringResource(R.string.label_deck_name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -308,11 +310,11 @@ private fun EditDeckDialog(
                 onClick = { onConfirm(name) },
                 enabled = name.isNotBlank() && name != deck.name,
             ) {
-                Text("Rename")
+                Text(stringResource(R.string.action_rename))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }
@@ -325,15 +327,15 @@ private fun ConfirmDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Delete deck") },
-        text = { Text("Delete \"${deck.name}\"? This cannot be undone.") },
+        title = { Text(stringResource(R.string.deck_delete_dialog_title)) },
+        text = { Text(stringResource(R.string.deck_delete_dialog_message, deck.name)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Delete", color = MaterialTheme.colorScheme.error)
+                Text(stringResource(R.string.action_delete), color = MaterialTheme.colorScheme.error)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
         },
     )
 }

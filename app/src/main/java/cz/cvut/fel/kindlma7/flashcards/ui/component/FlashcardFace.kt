@@ -19,9 +19,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
 import kotlinx.coroutines.launch
 
@@ -51,8 +53,8 @@ fun FlashcardFace(
         FlashcardSide.ANSWER -> MaterialTheme.colorScheme.onSecondaryContainer
     }
     val label = when (side) {
-        FlashcardSide.QUESTION -> "Question"
-        FlashcardSide.ANSWER -> "Answer"
+        FlashcardSide.QUESTION -> stringResource(R.string.flashcard_face_question)
+        FlashcardSide.ANSWER -> stringResource(R.string.flashcard_face_answer)
     }
 
     ElevatedCard(
