@@ -14,4 +14,6 @@ sealed class Route(val path: String) {
         fun createRoute(deckId: Long) = "study_session/$deckId"
         const val ARG_DECK_ID = "deckId"
     }
+
+    data object Settings : Route("settings")
 }

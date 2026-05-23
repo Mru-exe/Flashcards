@@ -99,6 +99,13 @@
     <string name="rating_okay">Okay</string>
     <string name="rating_easy">Easy</string>
 
+    <!-- Settings -->
+    <string name="screen_settings_title">Settings</string>
+    <string name="settings_notification_interval_title">Notification interval</string>
+    <string name="settings_notification_interval_subtitle">How often to send a reminder when cards are due</string>
+    <string name="settings_interval_option_hours">Every %d hours</string>
+    <string name="settings_interval_option_test">1 minute (test only)</string>
+
     <!-- Plurals -->
     <plurals name="study_session_reviewed">
         <item quantity="one">Reviewed %d card</item>

@@ -8,6 +8,7 @@ import cz.cvut.fel.kindlma7.flashcards.data.api.TriviaRepository
 import cz.cvut.fel.kindlma7.flashcards.data.repository.DeckRepository
 import cz.cvut.fel.kindlma7.flashcards.data.repository.FlashcardRepository
 import cz.cvut.fel.kindlma7.flashcards.data.repository.ReviewRecordRepository
+import cz.cvut.fel.kindlma7.flashcards.data.preferences.UserPreferencesRepository
 import cz.cvut.fel.kindlma7.flashcards.data.repository.TopicRepository
 import cz.cvut.fel.kindlma7.flashcards.notification.NotificationScheduler
 import kotlinx.serialization.json.Json
@@ -31,4 +32,5 @@ class AppContainer(context: Context) {
     val triviaRepository = TriviaRepository(retrofit.create(OpenTdbApiService::class.java))
 
     val notificationScheduler = NotificationScheduler(context)
+    val userPreferencesRepository = UserPreferencesRepository(context, notificationScheduler)
 }
