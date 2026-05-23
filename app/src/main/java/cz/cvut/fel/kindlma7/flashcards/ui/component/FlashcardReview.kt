@@ -19,9 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import cz.cvut.fel.kindlma7.flashcards.R
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
-//TODO: zkontrolovat quality modifiery podle SM-2 specifikace
-//TODO: Upravit barvy podle nového theme
-
 enum class ReviewRating(@param:StringRes val labelRes: Int, val quality: Int) {
     Again(R.string.rating_again, 0),
     Hard(R.string.rating_hard, 2),
