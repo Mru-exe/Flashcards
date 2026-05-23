@@ -105,6 +105,11 @@
     <string name="settings_notification_interval_subtitle">How often to send a reminder when cards are due</string>
     <string name="settings_interval_option_hours">Every %d hours</string>
     <string name="settings_interval_option_test">1 minute (test only)</string>
+    <string name="settings_theme_title">App theme</string>
+    <string name="settings_theme_subtitle">Choose light, dark, or follow the system setting</string>
+    <string name="settings_theme_system">System default</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
 
     <!-- Plurals -->
     <plurals name="study_session_reviewed">
