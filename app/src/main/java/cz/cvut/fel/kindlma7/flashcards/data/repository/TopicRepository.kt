@@ -14,9 +14,7 @@ class TopicRepository(private val topicDao: TopicDao) {
     }
 
     suspend fun getById(id: Int): Topic? = topicDao.getById(id)?.toDomain()
-
-    // TODO: napojit na api
-    suspend fun syncFromApi(topics: List<Topic>) = topicDao.insertAll(topics.map { it.toEntity() })
+        suspend fun syncFromApi(topics: List<Topic>) = topicDao.insertAll(topics.map { it.toEntity() })
 
     suspend fun delete(topic: Topic) = topicDao.delete(topic.toEntity())
 }
