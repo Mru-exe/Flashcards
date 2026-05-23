@@ -27,7 +27,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +60,7 @@ import cz.cvut.fel.kindlma7.flashcards.ui.screen.import.ImportScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.import.ImportViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.settings.SettingsScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.settings.SettingsViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.theme.AppTheme
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
@@ -98,7 +101,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val appContainer = appContainer
         setContent {
-            FlashcardsTheme {
+            val settingsUiState by settingsViewModel.uiState.collectAsState()
+            val darkTheme = when (settingsUiState.appTheme) {
+                AppTheme.LIGHT  -> false
+                AppTheme.DARK   -> true
+                AppTheme.SYSTEM -> isSystemInDarkTheme()
+            }
+            FlashcardsTheme(darkTheme = darkTheme, dynamicColor = false) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val activity = LocalContext.current as ComponentActivity
                     var showRationale by remember { mutableStateOf(false) }

@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import cz.cvut.fel.kindlma7.flashcards.R
+import cz.cvut.fel.kindlma7.flashcards.ui.theme.AppTheme
 
 /** (minutes, labelRes) pairs. Values < 15 min use OneTimeWorkRequest (test only). */
 private data class IntervalOption(val minutes: Int, val labelRes: Int)
@@ -91,7 +92,57 @@ fun SettingsScreen(
                     ) {
                         RadioButton(
                             selected = uiState.notificationIntervalMinutes == option.minutes,
-                            onClick = null, // handled by Row selectable
+                            onClick = null,
+                        )
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.padding(start = 16.dp),
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(R.string.settings_theme_title),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(R.string.settings_theme_subtitle),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider()
+
+            Column(modifier = Modifier.selectableGroup()) {
+                AppTheme.entries.forEach { theme ->
+                    val label = stringResource(
+                        when (theme) {
+                            AppTheme.SYSTEM -> R.string.settings_theme_system
+                            AppTheme.LIGHT  -> R.string.settings_theme_light
+                            AppTheme.DARK   -> R.string.settings_theme_dark
+                        }
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = uiState.appTheme == theme,
+                                onClick = { viewModel.setAppTheme(theme) },
+                                role = Role.RadioButton,
+                            )
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = uiState.appTheme == theme,
+                            onClick = null,
                         )
                         Text(
                             text = label,

@@ -5,8 +5,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import cz.cvut.fel.kindlma7.flashcards.notification.NotificationScheduler
+import cz.cvut.fel.kindlma7.flashcards.ui.theme.AppTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -19,11 +21,18 @@ class UserPreferencesRepository(
 ) {
     companion object {
         val KEY_NOTIFICATION_INTERVAL = intPreferencesKey("notification_interval_minutes")
+        val KEY_APP_THEME = stringPreferencesKey("app_theme")
         const val DEFAULT_INTERVAL_MINUTES = 1440 // 24 h
     }
 
     val notificationIntervalMinutes: Flow<Int> = context.dataStore.data
         .map { prefs -> prefs[KEY_NOTIFICATION_INTERVAL] ?: DEFAULT_INTERVAL_MINUTES }
+
+    val appTheme: Flow<AppTheme> = context.dataStore.data
+        .map { prefs ->
+            prefs[KEY_APP_THEME]?.let { runCatching { AppTheme.valueOf(it) }.getOrNull() }
+                ?: AppTheme.SYSTEM
+        }
 
     suspend fun getIntervalOnce(): Int =
         notificationIntervalMinutes.first()
@@ -33,5 +42,11 @@ class UserPreferencesRepository(
             prefs[KEY_NOTIFICATION_INTERVAL] = minutes
         }
         notificationScheduler.schedule(minutes.toLong())
+    }
+
+    suspend fun setAppTheme(theme: AppTheme) {
+        context.dataStore.edit { prefs ->
+            prefs[KEY_APP_THEME] = theme.name
+        }
     }
 }
