@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -55,6 +56,8 @@ import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListView
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.flashcardlist.FlashcardListScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.import.ImportScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.import.ImportViewModel
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.settings.SettingsScreen
+import cz.cvut.fel.kindlma7.flashcards.ui.screen.settings.SettingsViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionScreen
 import cz.cvut.fel.kindlma7.flashcards.ui.screen.studysession.StudySessionViewModel
 import cz.cvut.fel.kindlma7.flashcards.ui.theme.FlashcardsTheme
@@ -63,6 +66,7 @@ private val bottomNavItems = listOf(
     Triple(Route.Dashboard, "Dashboard", Icons.Default.Home),
     Triple(Route.DeckList, "My Decks", Icons.AutoMirrored.Filled.List),
     Triple(Route.Import, "Import", Icons.Default.Search),
+    Triple(Route.Settings, "Settings", Icons.Default.Settings),
 )
 
 class MainActivity : ComponentActivity() {
@@ -83,6 +87,10 @@ class MainActivity : ComponentActivity() {
             appContainer.triviaRepository,
             appContainer.topicRepository,
         )
+    }
+
+    private val settingsViewModel: SettingsViewModel by viewModels {
+        SettingsViewModel.factory(appContainer.userPreferencesRepository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -278,6 +286,10 @@ class MainActivity : ComponentActivity() {
                                 viewModel = viewModel,
                                 onNavigateBack = { navController.popBackStack() },
                             )
+                        }
+
+                        composable(Route.Settings.path) {
+                            SettingsScreen(viewModel = settingsViewModel)
                         }
                     }
                 }
